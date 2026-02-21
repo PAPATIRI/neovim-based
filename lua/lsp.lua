@@ -22,11 +22,16 @@ vim.lsp.config.lua_ls = {
 	capabilities = capabilities,
 	settings = {
 		Lua = {
-			workspace = { library = vim.api.nvim_get_runtime_file("", true), checkThirdParty = false },
 			runtime = { version = "LuaJIT" },
+			workspace = {
+				library = { vim.env.VIMRUNTIME },
+				checkThirdParty = false
+			},
+			telemetry = { enable = false }
 		},
 	},
 }
+
 vim.lsp.enable("lua_ls")
 
 vim.api.nvim_create_autocmd("LspAttach", {

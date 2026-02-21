@@ -1,19 +1,19 @@
 -- auto menampilkan list sessions
-vim.api.nvim_create_autocmd("VimEnter", {
-	callback = function()
-		if vim.fn.argc() == 0 and vim.api.nvim_buf_get_name(0) == "" then
-			vim.defer_fn(function()
-				local sessions = require('mini.sessions')
-
-				if next(sessions.detected) ~= nil then
-					sessions.select()
-				else
-					vim.api.nvim_echo({ { " 󱫐 No saved sessions found", "Comment" } }, false, {})
-				end
-			end, 50)
-		end
-	end,
-})
+-- vim.api.nvim_create_autocmd("VimEnter", {
+-- 	callback = function()
+-- 		if vim.fn.argc() == 0 and vim.api.nvim_buf_get_name(0) == "" then
+-- 			vim.defer_fn(function()
+-- 				local sessions = require('mini.sessions')
+--
+-- 				if next(sessions.detected) ~= nil then
+-- 					sessions.select()
+-- 				else
+-- 					vim.api.nvim_echo({ { " 󱫐 No saved sessions found", "Comment" } }, false, {})
+-- 				end
+-- 			end, 50)
+-- 		end
+-- 	end,
+-- })
 
 -- command :PackUpdate & :PackInstall untuk manajamen plugin
 vim.api.nvim_create_user_command("PackUpdate", function()

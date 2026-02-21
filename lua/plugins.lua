@@ -66,7 +66,6 @@ sessions.setup({
 	directory = vim.fn.stdpath('data') .. '/sessions',
 	autowrite = true,
 })
--- Keymap Navigasi Session
 vim.keymap.set("n", "<leader>sl", function() sessions.select() end, { desc = "List Sessions" })
 vim.keymap.set("n", "<leader>ss", function()
 	local name = vim.fn.input("Session Name: ")
@@ -76,7 +75,6 @@ vim.keymap.set("n", "<leader>ss", function()
 		vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
 	end
 end, { desc = "Save Session As" })
--- Menghapus session (dengan paksa jika itu session aktif)
 vim.keymap.set("n", "<leader>sd", function()
 	require('mini.sessions').select('delete', { force = true })
 end, { desc = "Delete Session (Force)" })
