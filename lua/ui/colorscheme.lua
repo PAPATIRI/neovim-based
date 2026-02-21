@@ -77,8 +77,11 @@ hl(0, "OilDirIcon", { fg = palette.pine })
 hl(0, "OilFile", { fg = palette.text })
 
 -- mini indentscope
-hl(0, "MiniIndentscopeSymbol", { fg = palette.overlay })
+hl(0, "MiniIndentscopeSymbol", { fg = palette.text })
 -- mini icons
 for _, group in ipairs({ "Azure", "Blue", "Cyan", "Green", "Grey", "Orange", "Purple", "Red", "Yellow" }) do
 	hl(0, "MiniIcons" .. group, { fg = palette.pine })
 end
+-- autocompletion
+hl(0, "Pmenu", { bg = palette.base, fg = palette.subtle })
+hl(0, "PmenuSel", { bg = palette.overlay, fg = palette.text, bold = true })

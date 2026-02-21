@@ -1,5 +1,10 @@
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
+capabilities.textDocument.foldingRange = {
+	dynamicRegistration = false,
+	lineFoldingOnly = true
+}
+
 require("flutter-tools").setup({
 	ui = { border = "rounded" },
 	decorations = { statusline = { app_version = true, device = true } },
@@ -26,6 +31,10 @@ vim.lsp.enable("lua_ls")
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
+		-- completion
+		vim.bo[args.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+		-- mapping ketika lsp di attach
 		local map = function(keys, func)
 			vim.keymap.set("n", keys, func, { buffer = args.buf })
 		end

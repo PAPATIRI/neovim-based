@@ -1,6 +1,7 @@
 -- dap plugin
 local dap = require("dap")
 local dapui = require("dapui")
+
 dapui.setup()
 dap.listeners.after.event_initialized["dapui_config"] = function()
 	dapui.open()
@@ -23,6 +24,12 @@ map({ "v", "n", "x" }, "<leader>y", '"+y<CR>')
 map({ "v", "n", "x" }, "<leader>d", '"+d<CR>')
 map({ "v", "n", "x" }, "<leader>s", ":e #<CR>")
 map({ "v", "n", "x" }, "<leader>S", ":sf #<CR>")
+
+local trigger_completion = function()
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n", true)
+end
+map("i", "<C-Space>", trigger_completion, { desc = "Trigger Completion" })
+map("i", "<C-@>", trigger_completion, { desc = "Trigger Completion Fallback" })
 
 -- plugin keymap
 vim.ui.select = require("mini.pick").ui_select
@@ -47,10 +54,9 @@ map("n", "<leader>dc", dap.continue, { desc = "Start/Continue" })
 map("n", "<leader>do", dap.step_over, { desc = "Step Over" })
 map("n", "<leader>di", dap.step_into, { desc = "Step Into" })
 map("n", "<leader>du", dapui.toggle, { desc = "Toggle UI Debug" })
--- Keymap Session Manager
-map("n", "<leader>sl", ":SessionManager load_session<CR>", { desc = "Load Session (List Project)" })
-map("n", "<leader>sd", ":SessionManager delete_session<CR>", { desc = "Delete Session" })
-map("n", "<leader>sc", ":SessionManager save_current_session<CR>", { desc = "Save Current Session" })
 -- hop nvim
 map("n", "<leader><leader>w", ":HopWord<CR>", { desc = "Hop Word" })
 map("n", "<leader><leader>s", ":HopChar1<CR>", { desc = "Hop 1 Char" })
+-- ufo nvim
+map('n', 'zR', require('ufo').openAllFolds)
+map('n', 'zM', require('ufo').closeAllFolds)

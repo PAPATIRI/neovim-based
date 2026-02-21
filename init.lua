@@ -15,7 +15,14 @@ vim.o.smartcase = true
 vim.o.ignorecase = true
 vim.o.cursorline = true
 vim.o.scrolloff = 1
-vim.opt.fillchars = { eob = " " }
+vim.o.fillchars = 'eob: ,fold: ,foldopen:,foldsep: ,foldinner: ,foldclose:'
+vim.o.completeopt = "menuone,noinsert,noselect"
+-- folding setting
+vim.o.foldmethod = 'indent'
+vim.o.foldcolumn = '0'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
 
 -- add plugin
 vim.pack.add({
@@ -29,59 +36,24 @@ vim.pack.add({
 	{ src = "https://github.com/mfussenegger/nvim-dap" },
 	{ src = "https://github.com/nvim-neotest/nvim-nio" },
 	{ src = "https://github.com/rcarriga/nvim-dap-ui" },
-	{ src = "https://github.com/Shatur/neovim-session-manager" },
 	{ src = "https://github.com/smoka7/hop.nvim" },
 	{ src = "https://github.com/echasnovski/mini.pairs" },
 	{ src = "https://github.com/echasnovski/mini.surround" },
 	{ src = "https://github.com/echasnovski/mini.indentscope" },
-	{ src = "https://github.com/echasnovski/mini.icons" }
-})
-
--- setup plugin
-require("mini.pick").setup()
-require("mini.pairs").setup()
-require("mini.icons").setup()
-require("mini.surround").setup()
-require("mini.indentscope").setup({
-	symbol = "│",
-	options = {
-		try_as_border = true,
-		indent_at_cursor = false,
-	},
-})
-require("oil").setup({
-	float = {
-		padding = 2,
-		max_width = math.floor(vim.o.columns * 0.8),
-		max_height = math.floor(vim.o.lines * 0.8),
-		border = "rounded",
-		win_options = {
-			winblend = 0,
-			number = false,
-			relativenumber = false,
-			signcolumn = "no",
-		},
-	},
-})
-require("mason").setup()
-require("flutter-tools").setup({})
-require("fidget").setup({})
--- hop (easy motion like)
-require("hop").setup({
-	keys = 'etovxqpdygfblzhckisuran'
-})
--- sessionmanager plugin
-local session_manager = require("session_manager")
-session_manager.setup({
-	autoload_mode = require('session_manager.config').AutoloadMode.Disabled
+	{ src = "https://github.com/echasnovski/mini.icons" },
+	{ src = "https://github.com/echasnovski/mini.sessions" },
+	{ src = "https://github.com/rose-pine/neovim" },
+	{ src = "https://github.com/kevinhwang91/promise-async" },
+	{ src = "https://github.com/kevinhwang91/nvim-ufo" },
 })
 
 -- keymap settings
+require("plugins")
 require("keymap")
+require("lsp")
+require("autocommand")
 -- ui settings
-require("ui.colorscheme")
+vim.cmd("colorscheme rose-pine")
+-- require("ui.colorscheme")
 require("ui.terminal")
 require("ui.statusline")
-require("autocmd.command")
--- lsp settings
-require("lsp.config")
