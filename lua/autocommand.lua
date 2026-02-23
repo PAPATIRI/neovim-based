@@ -42,3 +42,16 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		end
 	end,
 })
+
+-- membuat colorscheme
+vim.api.nvim_create_autocmd("ColorScheme", {
+	pattern = "*",
+	callback = function()
+		vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+		vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
+	end
+})
+
+vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
+vim.cmd("hi NormalFloat guibg=NONE ctermbg=NONE")
