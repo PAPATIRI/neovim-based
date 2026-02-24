@@ -15,15 +15,18 @@ end
 
 -- general keymap
 local map = vim.keymap.set
-map("n", "<leader>o", ":update<CR> :source<CR>")
-map("n", "<leader>w", ":write<CR>")
-map("n", "<leader>q", ":quit<CR>")
-map("i", "jk", "<Esc>")
-map("i", "jj", "<Esc>")
+map("n", "<leader>o", ":update<CR> :source<CR>", { desc = "source neovim's configuration" })
+map("n", "<leader>w", ":write<CR>", { desc = "write the changes made" })
+map("n", "<leader>q", ":quit<CR>", { desc = "exit vim" })
+map("i", "jk", "<Esc>", { desc = "exit insert mode" })
+map("i", "jj", "<Esc>", { desc = "exit insert mode" })
 map({ "v", "n", "x" }, "<leader>y", '"+y<CR>')
 map({ "v", "n", "x" }, "<leader>d", '"+d<CR>')
 map({ "v", "n", "x" }, "<leader>s", ":e #<CR>")
 map({ "v", "n", "x" }, "<leader>S", ":sf #<CR>")
+map("n", "n", "nzzzv", { desc = "Next search result (centered)" })
+map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
+map("n", "<leader><esc>", ":noh<CR>", { desc = "clear search highlights" })
 
 local trigger_completion = function()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n", true)

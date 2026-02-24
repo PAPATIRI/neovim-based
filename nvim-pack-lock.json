@@ -84,6 +84,10 @@
       "rev": "119e8961014c9bfaf1487bf3c2a393d254f337e2",
       "src": "https://github.com/kevinhwang91/promise-async"
     },
+    "transparent.nvim": {
+      "rev": "8ac59883de84e9cd1850ea25cf087031c5ba7d54",
+      "src": "https://github.com/xiyaowong/transparent.nvim"
+    },
     "vague.nvim": {
       "rev": "30d2239ecf8adab9bc0d07d42e7a07283879dab6",
       "src": "https://github.com/vague-theme/vague.nvim"
