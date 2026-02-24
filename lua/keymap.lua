@@ -4,13 +4,13 @@ local dapui = require("dapui")
 
 dapui.setup()
 dap.listeners.after.event_initialized["dapui_config"] = function()
-	dapui.open()
+  dapui.open()
 end
 dap.listeners.before.event_terminated["dapui_config"] = function()
-	dapui.close()
+  dapui.close()
 end
 dap.listeners.before.event_exited["dapui_config"] = function()
-	dapui.close()
+  dapui.close()
 end
 
 -- general keymap
@@ -27,9 +27,11 @@ map({ "v", "n", "x" }, "<leader>S", ":sf #<CR>")
 map("n", "n", "nzzzv", { desc = "Next search result (centered)" })
 map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
 map("n", "<leader><esc>", ":noh<CR>", { desc = "clear search highlights" })
+map("v", "<", "<gv", { desc = "Indent left and reselect" })
+map("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 local trigger_completion = function()
-	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n", true)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n", true)
 end
 map("i", "<C-Space>", trigger_completion, { desc = "Trigger Completion" })
 map("i", "<C-@>", trigger_completion, { desc = "Trigger Completion Fallback" })
@@ -42,9 +44,12 @@ map("n", "<leader>bl", ":Pick buffers<CR>", { desc = "Pick Open Buffers" })
 map("n", "<leader>bd", ":bd<CR>", { desc = "Close Buffer" })
 map("n", "<S-h>", ":bprevious<CR>", { desc = "Buffer Sebelumnya", silent = true })
 map("n", "<S-l>", ":bnext<CR>", { desc = "Buffer Selanjutnya", silent = true })
-map("n", "<leader>e", function()
-	require("oil").toggle_float()
-end, { desc = "Toggle Oil Explorer" })
+vim.keymap.set("n", "<leader>e", function()
+  require("oil").toggle_float(vim.fn.getcwd())
+end, { desc = "Oil: Float Project Root" })
+vim.keymap.set("n", "<leader>fo", function()
+  require("oil").toggle_float()
+end, { desc = "Oil: Float Parent Directory" })
 map("n", "<leader>lf", vim.lsp.buf.format)
 -- flutter-tools & debugging
 map("n", "<leader>fe", ":FlutterEmulators<CR>", { desc = "Buka Emulator" })

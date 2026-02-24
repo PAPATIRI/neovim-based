@@ -65,21 +65,29 @@ vim.cmd([[
 ]])
 
 local function setup_dynamic_statusline()
+  local ignored_filetypes = {
+    "oil",
+  }
   -- Saat window aktif (sedang digunakan)
   vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
     callback = function()
+      local is_floating = vim.api.nvim_win_get_config(0).relative ~= ""
+      local is_ignored = vim.tbl_contains(ignored_filetypes, vim.bo.filetype)
+
+      if is_floating or is_ignored then
+        vim.opt_local.statusline = "%#Normal#"
+        return
+      end
+
       vim.opt_local.statusline = table.concat({
-        -- BAGIAN KIRI
         "\u{e70f} ",
         "%#StatusLineModeMsg#",
         "%{v:lua.sl_mode()}",
         "%#StatusLine#",
 
-        -- BAGIAN TENGAH
         "%=",
         "%{v:lua.sl_ft()} %t %m%r ",
 
-        -- BAGIAN KANAN
         "%=",
         "%{v:lua.sl_git()}",
         "%P ",
@@ -90,7 +98,7 @@ local function setup_dynamic_statusline()
   -- Saat window tidak aktif (split screen, kursor di tempat lain)
   vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
     callback = function()
-      vim.opt_local.statusline = "%= %{v:lua.sl_ft()} %t %m%r %= %P "
+      vim.opt_local.statusline = "%= %{v:lua.sl_ft()} %t %m%r %="
     end,
   })
 end
