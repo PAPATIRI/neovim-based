@@ -17,28 +17,17 @@ local function git_branch()
 end
 
 local function file_type()
-  local ft = vim.bo.filetype
-  local icons = {
-    lua             = "\u{e620}",
-    dart            = "\u{e798}",
-    go              = "\u{e724}",
-    php             = "\u{e73d}",
-    javascript      = "\u{e74e}",
-    typescript      = "\u{e628}",
-    javascriptreact = "\u{e7ba}",
-    typescriptreact = "\u{e7ba}",
-    html            = "\u{e736}",
-    css             = "\u{e749}",
-    json            = "\u{e60b}",
-    vue             = "\u{fd42}",
-    markdown        = "\u{e73e}",
-  }
+  local ok, mini_icons = pcall(require, "mini.icons")
 
-  if ft == "" then
+  if not ok then
     return " \u{f15b} "
   end
 
-  return ((icons[ft] or " \u{f15b} "))
+  local filename = vim.fn.expand("%:t")
+
+  local icon, hl = mini_icons.get("file", filename)
+
+  return "%#" .. hl .. "# " .. icon .. "%#StatusLine#"
 end
 
 local function mode_icon()
@@ -86,7 +75,7 @@ local function setup_dynamic_statusline()
         "%#StatusLine#",
 
         "%=",
-        "%{v:lua.sl_ft()} %t %m%r ",
+        "%{%v:lua.sl_ft()%} %t %m%r ",
 
         "%=",
         "%{v:lua.sl_git()}",
@@ -98,7 +87,7 @@ local function setup_dynamic_statusline()
   -- Saat window tidak aktif (split screen, kursor di tempat lain)
   vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
     callback = function()
-      vim.opt_local.statusline = "%= %{v:lua.sl_ft()} %t %m%r %="
+      vim.opt_local.statusline = "%= %{%v:lua.sl_ft()%} %t %m%r %="
     end,
   })
 end
