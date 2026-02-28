@@ -16,9 +16,9 @@ map("v", "<", "<gv", { desc = "Indent left and reselect" })
 map("v", ">", ">gv", { desc = "Indent right and reselect" })
 map("n", "<S-h>", ":bprevious<CR>", { desc = "Buffer Sebelumnya", silent = true })
 map("n", "<S-l>", ":bnext<CR>", { desc = "Buffer Selanjutnya", silent = true })
-map('n', 'gl', vim.diagnostic.open_float, { desc = "Lihat Detail Error" })
-map('n', '[d', vim.diagnostic.get_prev, { desc = "Error Sebelumnya" })
-map('n', ']d', vim.diagnostic.get_next, { desc = "Error Selanjutnya" })
+map("n", "gl", vim.diagnostic.open_float, { desc = "Lihat Detail Error" })
+map("n", "[d", vim.diagnostic.get_prev, { desc = "Error Sebelumnya" })
+map("n", "]d", vim.diagnostic.get_next, { desc = "Error Selanjutnya" })
 
 -- plugin keymap
 vim.ui.select = require("mini.pick").ui_select
@@ -27,39 +27,26 @@ map("n", "<leader>h", ":Pick help<CR>")
 map("n", "<leader>bl", ":Pick buffers<CR>", { desc = "Pick Open Buffers" })
 map("n", "<leader>bd", ":bd<CR>", { desc = "Close Buffer" })
 map("n", "<leader>e", function()
-  require("oil").toggle_float(vim.fn.getcwd())
+	require("oil").toggle_float(vim.fn.getcwd())
 end, { desc = "Oil: Float Project Root" })
 map("n", "<leader>fo", function()
-  require("oil").toggle_float()
+	require("oil").toggle_float()
 end, { desc = "Oil: Float Parent Directory" })
 map("n", "<leader>lf", vim.lsp.buf.format)
 
--- flutter-tools & debugging
-map("n", "<leader>fe", ":FlutterEmulators<CR>", { desc = "Buka Emulator" })
-map("n", "<leader>fr", ":FlutterRun<CR>", { desc = "Jalankan Project" })
-map("n", "<leader>fq", ":FlutterQuit<CR>", { desc = "Hentikan Project" })
-map("n", "<leader>fR", ":FlutterRestart<CR>", { desc = "Hot Restart" })
-map("n", "<leader>fl", ":FlutterReload<CR>", { desc = "Hot Reload Manual" })
-
--- hop nvim
-map("n", "<leader><leader>w", ":HopWord<CR>", { desc = "Hop Word" })
-map("n", "<leader><leader>s", ":HopChar1<CR>", { desc = "Hop 1 Char" })
-
--- ufo nvim
-map('n', 'zR', require('ufo').openAllFolds)
-map('n', 'zM', require('ufo').closeAllFolds)
-
 -- mini sessions
-local sessions = require('mini.sessions')
-map("n", "<leader>sl", function() sessions.select() end, { desc = "List Sessions" })
+local sessions = require("mini.sessions")
+map("n", "<leader>sl", function()
+	sessions.select()
+end, { desc = "List Sessions" })
 map("n", "<leader>ss", function()
-  local name = vim.fn.input("Session Name: ")
-  if name ~= "" then
-    require('mini.sessions').write(name)
-    vim.cmd('redraw')
-    vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
-  end
+	local name = vim.fn.input("Session Name: ")
+	if name ~= "" then
+		require("mini.sessions").write(name)
+		vim.cmd("redraw")
+		vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
+	end
 end, { desc = "Save Session As" })
 map("n", "<leader>sd", function()
-  require('mini.sessions').select('delete', { force = true })
+	require("mini.sessions").select("delete", { force = true })
 end, { desc = "Delete Session (Force)" })

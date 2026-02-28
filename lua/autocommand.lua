@@ -12,6 +12,17 @@ vim.api.nvim_create_user_command("PackInstall", function()
     print("Mengecek dan menginstal plugin baru...")
   end
 end, {})
+vim.api.nvim_create_user_command("PackClean", function()
+  local data_path = vim.fn.stdpath("data")
+  local plugin_dir = data_path .. "/site/pack/core/opt"
+
+  if vim.fn.isdirectory(plugin_dir) == 1 then
+    require("oil").open_float(plugin_dir)
+    print("🗑️ Silakan arahkan kursor ke folder plugin yang mati, lalu tekan 'd' (delete) di Oil.")
+  else
+    print("Folder plugin belum ditemukan di: " .. plugin_dir)
+  end
+end, { desc = "Buka direktori plugin untuk dihapus manual via Oil" })
 
 -- Mengatur Auto-Format pada saat menyimpan file (untuk Dart, Lua, dll)
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -79,9 +90,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 -- agar tidak auto comment
--- vim.api.nvim_create_autocmd("BufEnter", {
---   callback = function()
---     vim.opt.formatoptions:remove({ "o", "r" })
---   end,
---   desc = "Matikan auto-comment pada baris baru",
--- })
+vim.api.nvim_create_autocmd("BufEnter", {
+  callback = function()
+    vim.opt.formatoptions:remove({ "o", "r" })
+  end,
+  desc = "Matikan auto-comment pada baris baru",
+})

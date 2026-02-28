@@ -35,13 +35,6 @@ vim.diagnostic.config({
   severity_sort = true
 })
 
--- folding setting
-vim.o.foldmethod = 'indent'
-vim.o.foldcolumn = '0'
-vim.o.foldlevel = 99
-vim.o.foldlevelstart = 99
-vim.o.foldenable = true
-
 -- backup setting
 local undodir = vim.fn.stdpath("data") .. "/undo"
 if vim.fn.isdirectory(undodir) == 0 then
