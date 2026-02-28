@@ -27,6 +27,13 @@ vim.o.smartcase = true
 vim.o.ignorecase = true
 vim.opt.clipboard:append("unnamedplus")
 vim.o.mouse = "a"
+vim.diagnostic.config({
+  virtual_text = false,
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true
+})
 
 -- folding setting
 vim.o.foldmethod = 'indent'

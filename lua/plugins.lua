@@ -1,4 +1,3 @@
--- add plugin
 vim.pack.add({
   -- filetree
   { src = "https://github.com/stevearc/oil.nvim" },
@@ -22,6 +21,7 @@ vim.pack.add({
   { src = "https://github.com/echasnovski/mini.indentscope" },
   { src = "https://github.com/echasnovski/mini.icons" },
   { src = "https://github.com/echasnovski/mini.sessions" },
+  { src = "https://github.com/nvim-mini/mini.completion" },
   -- colorscheme
   { src = "https://github.com/rose-pine/neovim" },
   -- folding
@@ -34,6 +34,10 @@ require("mini.pick").setup()
 require("mini.pairs").setup()
 require("mini.icons").setup()
 require("mini.surround").setup()
+require('mini.sessions').setup({
+  directory = vim.fn.stdpath('data') .. '/sessions',
+  autowrite = true,
+})
 require("mini.indentscope").setup({
   symbol = "│",
   options = {
@@ -41,6 +45,39 @@ require("mini.indentscope").setup({
     indent_at_cursor = false,
   },
 })
+require("mini.completion").setup({
+  delay = { completion = 50, info = 100, signature = 50 },
+  lsp_completion = {
+    source_func = 'omnifunc',
+    auto_setup = true
+  }
+})
+-- local trigger_completion = function()
+--   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n", true)
+-- end
+-- vim.keymap.set("i", "<C-Space>", trigger_completion, { desc = "Trigger Completion Manual" })
+-- vim.keymap.set("i", "<C-@>", trigger_completion, { desc = "Trigger Completion Fallback" })
+-- local toggle_autocomplete_info = function()
+--   vim.g.minicompletion_disable = not vim.g.minicompletion_disable
+--
+--   if vim.g.minicompletion_disable then
+--     vim.api.nvim_echo({ { "Auto-Completion: OFF! (<C-Space> = shows completion))", "DiagnosticInfo" } }, true, {})
+--   else
+--     vim.api.nvim_echo({ { "Auto-Completion: ON!", "DiagnosticInfo" } }, true, {})
+--   end
+-- end
+-- vim.keymap.set("n", "<leader>tc", toggle_autocomplete_info, { desc = "Toggle Auto-Completion" })
+
+-- lsp things
+require("mason").setup()
+require("flutter-tools").setup({})
+require("fidget").setup({})
+
+require("hop").setup({
+  keys = 'etovxqpdygfblzhckisuran'
+})
+
+
 require("ufo").setup({
   fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
     local newVirtText = {}
@@ -71,6 +108,7 @@ require("ufo").setup({
     return { 'lsp', 'indent' }
   end
 })
+
 require("oil").setup({
   float = {
     padding = 2,
@@ -83,29 +121,29 @@ require("oil").setup({
       relativenumber = false,
       signcolumn = "no",
     },
+    get_win_title = function(dir)
+      local dir = require("oil").get_current_dir()
+      if not dir then
+        return " Oil "
+      end
+
+      local cwd = vim.fn.getcwd()
+      local root_name = vim.fn.fnamemodify(cwd, ":t")
+      local relative_path = vim.fn.fnamemodify(dir, ":.")
+
+      local display_path
+      if relative_path == "." or relative_path == "" then
+        display_path = root_name .. "\\"
+      else
+        display_path = root_name .. "\\" .. relative_path
+      end
+
+      display_path = display_path:gsub("/", "\\")
+
+      local ok, mini_icons = pcall(require, "mini.icons")
+      local icon = ok and mini_icons.get("directory", "") or ""
+
+      return " " .. icon .. " " .. display_path .. " "
+    end
   },
 })
-require("mason").setup()
-require("flutter-tools").setup({})
-require("fidget").setup({})
-require("hop").setup({
-  keys = 'etovxqpdygfblzhckisuran'
-})
--- Konfigurasi Mini Sessions
-local sessions = require('mini.sessions')
-sessions.setup({
-  directory = vim.fn.stdpath('data') .. '/sessions',
-  autowrite = true,
-})
-vim.keymap.set("n", "<leader>sl", function() sessions.select() end, { desc = "List Sessions" })
-vim.keymap.set("n", "<leader>ss", function()
-  local name = vim.fn.input("Session Name: ")
-  if name ~= "" then
-    require('mini.sessions').write(name)
-    vim.cmd('redraw')
-    vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
-  end
-end, { desc = "Save Session As" })
-vim.keymap.set("n", "<leader>sd", function()
-  require('mini.sessions').select('delete', { force = true })
-end, { desc = "Delete Session (Force)" })

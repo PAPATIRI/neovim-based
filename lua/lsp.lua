@@ -1,55 +1,71 @@
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 capabilities.textDocument.foldingRange = {
-	dynamicRegistration = false,
-	lineFoldingOnly = true
+  dynamicRegistration = false,
+  lineFoldingOnly = true
 }
 
 require("flutter-tools").setup({
-	ui = { border = "rounded" },
-	decorations = { statusline = { app_version = true, device = true } },
-	debugger = {
-		enabled = true,
-		run_via_dap = true
-	},
-	lsp = {
-		capabilities = capabilities,
-	},
+  ui = { border = "rounded" },
+  decorations = { statusline = { app_version = true, device = true } },
+  debugger = {
+    enabled = true,
+    run_via_dap = true
+  },
+  lsp = {
+    capabilities = capabilities,
+  },
 })
 
+vim.lsp.config.gopls = {
+  cmd = { "gopls" },
+  capabilities = capabilities,
+  root_markers = { "go.work", "go.mod", ".git" },
+  settings = {
+    gopls = {
+      analyses = {
+        unusedparams = true,
+      },
+      staticcheck = true,
+      gofumpt = true
+    }
+  }
+}
+vim.lsp.enable("gopls")
+
 vim.lsp.config.lua_ls = {
-	cmd = { "lua-language-server" },
-	capabilities = capabilities,
-	settings = {
-		Lua = {
-			runtime = { version = "LuaJIT" },
-			workspace = {
-				library = { vim.env.VIMRUNTIME },
-				checkThirdParty = false
-			},
-			telemetry = { enable = false }
-		},
-	},
+  cmd = { "lua-language-server" },
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      runtime = { version = "LuaJIT" },
+      workspace = {
+        library = { vim.env.VIMRUNTIME },
+        checkThirdParty = false
+      },
+      telemetry = { enable = false }
+    },
+  },
 }
 
 vim.lsp.enable("lua_ls")
 
 vim.api.nvim_create_autocmd("LspAttach", {
-	callback = function(args)
-		-- completion
-		vim.bo[args.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+  callback = function(args)
+    -- completion
+    vim.bo[args.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-		-- mapping ketika lsp di attach
-		local map = function(keys, func)
-			vim.keymap.set("n", keys, func, { buffer = args.buf })
-		end
+    -- mapping ketika lsp di attach
+    local map = function(keys, func)
+      vim.keymap.set("n", keys, func, { buffer = args.buf })
+    end
 
-		map("K", vim.lsp.buf.hover)
-		map("gd", vim.lsp.buf.definition)
-		map("gD", vim.lsp.buf.declaration)
-		map("gi", vim.lsp.buf.implementation)
-		map("gr", vim.lsp.buf.references)
-		map("<leader>rn", vim.lsp.buf.rename)
-		map("<leader>ca", vim.lsp.buf.code_action)
-	end,
+    map("K", vim.lsp.buf.hover)
+    map("gd", vim.lsp.buf.definition)
+    map("gD", vim.lsp.buf.declaration)
+    map("gi", vim.lsp.buf.implementation)
+    map("gr", vim.lsp.buf.references)
+    map("<leader>rn", vim.lsp.buf.rename)
+    map("<leader>ca", vim.lsp.buf.code_action)
+  end,
 })

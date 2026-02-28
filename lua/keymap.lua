@@ -1,18 +1,3 @@
--- dap plugin
-local dap = require("dap")
-local dapui = require("dapui")
-
-dapui.setup()
-dap.listeners.after.event_initialized["dapui_config"] = function()
-  dapui.open()
-end
-dap.listeners.before.event_terminated["dapui_config"] = function()
-  dapui.close()
-end
-dap.listeners.before.event_exited["dapui_config"] = function()
-  dapui.close()
-end
-
 -- general keymap
 local map = vim.keymap.set
 map("n", "<leader>o", ":update<CR> :source<CR>", { desc = "source neovim's configuration" })
@@ -21,7 +6,7 @@ map("n", "<leader>q", ":quit<CR>", { desc = "exit vim" })
 map("i", "jk", "<Esc>", { desc = "exit insert mode" })
 map("i", "jj", "<Esc>", { desc = "exit insert mode" })
 map({ "v", "n", "x" }, "<leader>y", '"+y<CR>')
-map({ "v", "n", "x" }, "<leader>d", '"+d<CR>')
+-- map({ "v", "n", "x" }, "<leader>d", '"+d<CR>')
 map({ "v", "n", "x" }, "<leader>s", ":e #<CR>")
 map({ "v", "n", "x" }, "<leader>S", ":sf #<CR>")
 map("n", "n", "nzzzv", { desc = "Next search result (centered)" })
@@ -29,12 +14,11 @@ map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
 map("n", "<leader><esc>", ":noh<CR>", { desc = "clear search highlights" })
 map("v", "<", "<gv", { desc = "Indent left and reselect" })
 map("v", ">", ">gv", { desc = "Indent right and reselect" })
-
-local trigger_completion = function()
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n", true)
-end
-map("i", "<C-Space>", trigger_completion, { desc = "Trigger Completion" })
-map("i", "<C-@>", trigger_completion, { desc = "Trigger Completion Fallback" })
+map("n", "<S-h>", ":bprevious<CR>", { desc = "Buffer Sebelumnya", silent = true })
+map("n", "<S-l>", ":bnext<CR>", { desc = "Buffer Selanjutnya", silent = true })
+map('n', 'gl', vim.diagnostic.open_float, { desc = "Lihat Detail Error" })
+map('n', '[d', vim.diagnostic.get_prev, { desc = "Error Sebelumnya" })
+map('n', ']d', vim.diagnostic.get_next, { desc = "Error Selanjutnya" })
 
 -- plugin keymap
 vim.ui.select = require("mini.pick").ui_select
@@ -42,29 +26,40 @@ map("n", "<leader>ff", ":Pick files<CR>")
 map("n", "<leader>h", ":Pick help<CR>")
 map("n", "<leader>bl", ":Pick buffers<CR>", { desc = "Pick Open Buffers" })
 map("n", "<leader>bd", ":bd<CR>", { desc = "Close Buffer" })
-map("n", "<S-h>", ":bprevious<CR>", { desc = "Buffer Sebelumnya", silent = true })
-map("n", "<S-l>", ":bnext<CR>", { desc = "Buffer Selanjutnya", silent = true })
-vim.keymap.set("n", "<leader>e", function()
+map("n", "<leader>e", function()
   require("oil").toggle_float(vim.fn.getcwd())
 end, { desc = "Oil: Float Project Root" })
-vim.keymap.set("n", "<leader>fo", function()
+map("n", "<leader>fo", function()
   require("oil").toggle_float()
 end, { desc = "Oil: Float Parent Directory" })
 map("n", "<leader>lf", vim.lsp.buf.format)
+
 -- flutter-tools & debugging
 map("n", "<leader>fe", ":FlutterEmulators<CR>", { desc = "Buka Emulator" })
 map("n", "<leader>fr", ":FlutterRun<CR>", { desc = "Jalankan Project" })
 map("n", "<leader>fq", ":FlutterQuit<CR>", { desc = "Hentikan Project" })
 map("n", "<leader>fR", ":FlutterRestart<CR>", { desc = "Hot Restart" })
 map("n", "<leader>fl", ":FlutterReload<CR>", { desc = "Hot Reload Manual" })
-map("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
-map("n", "<leader>dc", dap.continue, { desc = "Start/Continue" })
-map("n", "<leader>do", dap.step_over, { desc = "Step Over" })
-map("n", "<leader>di", dap.step_into, { desc = "Step Into" })
-map("n", "<leader>du", dapui.toggle, { desc = "Toggle UI Debug" })
+
 -- hop nvim
 map("n", "<leader><leader>w", ":HopWord<CR>", { desc = "Hop Word" })
 map("n", "<leader><leader>s", ":HopChar1<CR>", { desc = "Hop 1 Char" })
+
 -- ufo nvim
 map('n', 'zR', require('ufo').openAllFolds)
 map('n', 'zM', require('ufo').closeAllFolds)
+
+-- mini sessions
+local sessions = require('mini.sessions')
+map("n", "<leader>sl", function() sessions.select() end, { desc = "List Sessions" })
+map("n", "<leader>ss", function()
+  local name = vim.fn.input("Session Name: ")
+  if name ~= "" then
+    require('mini.sessions').write(name)
+    vim.cmd('redraw')
+    vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
+  end
+end, { desc = "Save Session As" })
+map("n", "<leader>sd", function()
+  require('mini.sessions').select('delete', { force = true })
+end, { desc = "Delete Session (Force)" })

@@ -1,20 +1,3 @@
--- auto menampilkan list sessions
--- vim.api.nvim_create_autocmd("VimEnter", {
--- 	callback = function()
--- 		if vim.fn.argc() == 0 and vim.api.nvim_buf_get_name(0) == "" then
--- 			vim.defer_fn(function()
--- 				local sessions = require('mini.sessions')
---
--- 				if next(sessions.detected) ~= nil then
--- 					sessions.select()
--- 				else
--- 					vim.api.nvim_echo({ { " 󱫐 No saved sessions found", "Comment" } }, false, {})
--- 				end
--- 			end, 50)
--- 		end
--- 	end,
--- })
-
 -- command :PackUpdate & :PackInstall untuk manajamen plugin
 vim.api.nvim_create_user_command("PackUpdate", function()
   vim.pack.update()
@@ -39,6 +22,31 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
     if #clients > 0 then
       pcall(vim.lsp.buf.format, { bufnr = args.buf, async = false })
+    end
+  end,
+})
+
+-- Mengatur Auto-Organize Imports khusus untuk Golang saat save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+    local range_params = vim.lsp.util.make_range_params(0, "utf-16")
+
+    local params = {
+      textDocument = range_params.textDocument,
+      range = range_params.range,
+      context = { only = { "source.organizeImports" } }
+    }
+
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
+
+    for cid, res in pairs(result or {}) do
+      for _, r in pairs(res.result or {}) do
+        if r.edit then
+          local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
+          vim.lsp.util.apply_workspace_edit(r.edit, enc)
+        end
+      end
     end
   end,
 })
