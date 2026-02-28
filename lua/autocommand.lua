@@ -63,6 +63,13 @@ vim.api.nvim_create_autocmd("ColorScheme", {
       "FloatTitle",
       "SignColumn",
       "EndOfBuffer",
+      "Pmenu",
+      "BlinkCmpMenu",
+      "BlinkCmpMenuBorder",
+      "BlinkCmpDoc",
+      "BlinkCmpDocBorder",
+      "BlinkCmpSignatureHelp",
+      "BlinkCmpSignatureHelpBorder",
     }
 
     for _, group in ipairs(transparent_groups) do
@@ -72,9 +79,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 -- agar tidak auto comment
-vim.api.nvim_create_autocmd("BufEnter", {
-  callback = function()
-    vim.opt.formatoptions:remove({ "o", "r" })
-  end,
-  desc = "Matikan auto-comment pada baris baru",
-})
+-- vim.api.nvim_create_autocmd("BufEnter", {
+--   callback = function()
+--     vim.opt.formatoptions:remove({ "o", "r" })
+--   end,
+--   desc = "Matikan auto-comment pada baris baru",
+-- })
