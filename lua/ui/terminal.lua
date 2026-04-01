@@ -30,7 +30,7 @@ local function toggle_term()
   if not term or not vim.api.nvim_buf_is_valid(term.buf) then
     local buf = vim.api.nvim_create_buf(false, true)
     local win = vim.api.nvim_open_win(buf, true, opts)
-    vim.fn.jobstart({ "powershell.exe", "-NoLogo" }, { term = true })
+    vim.fn.jobstart({ vim.env.SHELL }, { term = true })
     terms[count] = { buf = buf, win = win }
   else
     -- Jika buffer sudah ada (tersembunyi), buka kembali windownya
