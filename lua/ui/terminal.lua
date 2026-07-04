@@ -1,5 +1,18 @@
 local terms = {}
 
+-- Deteksi shell secara adaptif berdasarkan OS, agar konfigurasi ini
+-- bisa dipakai di Windows maupun Linux (CachyOS) tanpa diubah-ubah.
+local function resolve_shell_cmd()
+  if vim.fn.has("win32") == 1 then
+    -- Prioritaskan PowerShell 7 (pwsh) jika ada, fallback ke Windows PowerShell.
+    -- Jangan pakai -NoProfile: $PROFILE harus dimuat agar oh-my-posh aktif.
+    local shell = vim.fn.executable("pwsh") == 1 and "pwsh" or "powershell"
+    return { shell, "-NoLogo", "-ExecutionPolicy", "Bypass" }
+  end
+  -- Linux/macOS: pakai shell login user (zsh/bash/fish), fallback ke 'shell' option
+  return { vim.env.SHELL or vim.o.shell }
+end
+
 local function toggle_term()
   -- Mengambil angka instance (default 1 jika hanya menekan Ctrl+/)
   local count = vim.v.count1
@@ -30,7 +43,7 @@ local function toggle_term()
   if not term or not vim.api.nvim_buf_is_valid(term.buf) then
     local buf = vim.api.nvim_create_buf(false, true)
     local win = vim.api.nvim_open_win(buf, true, opts)
-    vim.fn.jobstart({ vim.env.SHELL }, { term = true })
+    vim.fn.jobstart(resolve_shell_cmd(), { term = true })
     terms[count] = { buf = buf, win = win }
   else
     -- Jika buffer sudah ada (tersembunyi), buka kembali windownya
