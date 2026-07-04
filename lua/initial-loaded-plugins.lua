@@ -1,6 +1,11 @@
 require("mini.pick").setup()
 require("mini.icons").setup()
-require("mason").setup()
+require("mason").setup({
+  registries = {
+    "github:mason-org/mason-registry",
+    "github:Crashdummyy/mason-registry", -- registry yang menyediakan roslyn
+  },
+})
 require("mini.sessions").setup({
   directory = vim.fn.stdpath("data") .. "/sessions",
   autowrite = true,

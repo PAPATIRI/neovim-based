@@ -5,6 +5,10 @@ vim.pack.add({
   { src = "https://github.com/nvim-lua/plenary.nvim" },
   { src = "https://github.com/windwp/nvim-ts-autotag" },
   { src = "https://github.com/Saghen/blink.cmp" },
+  -- koleksi snippet vscode-style (cw -> Console.WriteLine, dll.),
+  -- otomatis terdeteksi oleh source "snippets" milik blink.cmp
+  { src = "https://github.com/rafamadriz/friendly-snippets" },
+  { src = "https://github.com/seblyng/roslyn.nvim" },
   -- notification & lsp progress message
   { src = "https://github.com/j-hui/fidget.nvim" },
   { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
@@ -13,6 +17,7 @@ vim.pack.add({
   { src = "https://github.com/mfussenegger/nvim-dap" },
   { src = "https://github.com/nvim-neotest/nvim-nio" },
   { src = "https://github.com/rcarriga/nvim-dap-ui" },
+  { src = "https://github.com/theHamsta/nvim-dap-virtual-text" },
   -- easy motion like
   { src = "https://github.com/smoka7/hop.nvim" },
   -- file picker & lainnya dari mini plugins
@@ -24,7 +29,27 @@ vim.pack.add({
 -- setup plugin
 require("mini.pairs").setup()
 require("mini.surround").setup()
-require("fidget").setup({})
+require("fidget").setup({
+  notification = {
+    -- semua vim.notify() (mis. pesan error/warning dari nvim-dap) tampil sebagai
+    -- popup di pojok kanan bawah, bukan di command line yang memicu "Press ENTER"
+    override_vim_notify = true,
+    -- pesan panjang dipotong, cukup sebagai penanda; detail lengkap via <leader>sna
+    window = {
+      max_width = 50,
+    },
+    configs = {
+      -- ikon default "❰❰" tidak ada di font (ter-render sebagai "(("), ganti bell
+      default = vim.tbl_extend("force", require("fidget.notification").default_config, {
+        name = "Notifikasi",
+        icon = "󰂚",
+      }),
+    },
+  },
+})
+vim.keymap.set("n", "<leader>sna", function()
+  require("fidget.notification").show_history()
+end, { desc = "Lihat Semua Notifikasi" })
 require("mini.indentscope").setup({
   symbol = "│",
   options = {
@@ -42,7 +67,7 @@ require("hop").setup({
 
 require("nvim-ts-autotag").setup()
 require("nvim-treesitter").setup({
-  ensure_installed = { "javascript", "typescript", "tsx", "html", "css", "json", "lua", "go", "dart" },
+  ensure_installed = { "javascript", "typescript", "tsx", "html", "css", "json", "lua", "go", "dart", "c_sharp" },
   highlight = { enable = true },
   indent = { enable = true }
 })
@@ -95,7 +120,9 @@ map_obj("al", "@call.outer")
 map_obj("il", "@call.inner")
 
 require("blink.cmp").setup({
-  keymap = { preset = "default" },
+  -- preset "enter": <CR> menerima item completion yang tersorot,
+  -- tetap berfungsi sebagai newline biasa saat menu tidak tampil
+  keymap = { preset = "enter" },
   appearance = {
     nerd_font_variant = "mono",
   },

@@ -98,6 +98,30 @@ vim.lsp.config.tailwindcss = {
 }
 vim.lsp.enable("tailwindcss")
 
+-- c# lsp (roslyn)
+-- servernya diinstall via mason (:MasonInstall roslyn) dari registry Crashdummyy,
+-- roslyn.nvim yang menghandle start/attach-nya (butuh solution/project discovery),
+-- jadi TIDAK perlu vim.lsp.enable("roslyn")
+vim.lsp.config("roslyn", {
+  capabilities = capabilities,
+  settings = {
+    ["csharp|inlay_hints"] = {
+      csharp_enable_inlay_hints_for_implicit_object_creation = true,
+      csharp_enable_inlay_hints_for_implicit_variable_types = true,
+      csharp_enable_inlay_hints_for_parameters = true,
+    },
+    ["csharp|code_lens"] = {
+      dotnet_enable_references_code_lens = true,
+      dotnet_enable_tests_code_lens = true,
+    },
+    ["csharp|background_analysis"] = {
+      dotnet_analyzer_diagnostics_scope = "fullSolution",
+      dotnet_compiler_diagnostics_scope = "fullSolution",
+    },
+  },
+})
+require("roslyn").setup({})
+
 -- emmet lsp
 vim.lsp.config.emmet_language_server = {
   cmd = { "emmet-language-server", "--stdio" },
@@ -130,5 +154,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("gr", vim.lsp.buf.references)
     map("<leader>rn", vim.lsp.buf.rename)
     map("<leader>ca", vim.lsp.buf.code_action)
+
+    -- inlay hints roslyn defaultnya off, aktifkan manual
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client.name == "roslyn" then
+      vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+    end
   end,
 })

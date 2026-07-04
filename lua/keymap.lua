@@ -16,9 +16,22 @@ map("v", "<", "<gv", { desc = "Indent left and reselect" })
 map("v", ">", ">gv", { desc = "Indent right and reselect" })
 map("n", "<S-h>", ":bprevious<CR>", { desc = "Buffer Sebelumnya", silent = true })
 map("n", "<S-l>", ":bnext<CR>", { desc = "Buffer Selanjutnya", silent = true })
+-- navigasi antar window/pane (termasuk panel dap-ui)
+map("n", "<C-h>", "<C-w>h", { desc = "Pindah ke Pane Kiri" })
+map("n", "<C-j>", "<C-w>j", { desc = "Pindah ke Pane Bawah" })
+map("n", "<C-k>", "<C-w>k", { desc = "Pindah ke Pane Atas" })
+map("n", "<C-l>", "<C-w>l", { desc = "Pindah ke Pane Kanan" })
+-- keluar dari terminal mode (mis. di panel DAP Console) agar bisa navigasi pane
+map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Keluar Terminal Mode" })
 map("n", "gl", vim.diagnostic.open_float, { desc = "Lihat Detail Error" })
-map("n", "[d", vim.diagnostic.get_prev, { desc = "Error Sebelumnya" })
-map("n", "]d", vim.diagnostic.get_next, { desc = "Error Selanjutnya" })
+-- get_prev/get_next hanya mengembalikan data tanpa memindahkan kursor,
+-- pakai jump() agar kursor lompat dan float pesannya langsung tampil
+map("n", "[d", function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Error Sebelumnya" })
+map("n", "]d", function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Error Selanjutnya" })
 
 -- plugin keymap
 vim.ui.select = require("mini.pick").ui_select
@@ -27,26 +40,26 @@ map("n", "<leader>h", ":Pick help<CR>")
 map("n", "<leader>bl", ":Pick buffers<CR>", { desc = "Pick Open Buffers" })
 map("n", "<leader>bd", ":bd<CR>", { desc = "Close Buffer" })
 map("n", "<leader>e", function()
-	require("oil").toggle_float(vim.fn.getcwd())
+  require("oil").toggle_float(vim.fn.getcwd())
 end, { desc = "Oil: Float Project Root" })
 map("n", "<leader>fo", function()
-	require("oil").toggle_float()
+  require("oil").toggle_float()
 end, { desc = "Oil: Float Parent Directory" })
 map("n", "<leader>lf", vim.lsp.buf.format)
 
 -- mini sessions
 local sessions = require("mini.sessions")
 map("n", "<leader>sl", function()
-	sessions.select()
+  sessions.select()
 end, { desc = "List Sessions" })
 map("n", "<leader>ss", function()
-	local name = vim.fn.input("Session Name: ")
-	if name ~= "" then
-		require("mini.sessions").write(name)
-		vim.cmd("redraw")
-		vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
-	end
+  local name = vim.fn.input("Session Name: ")
+  if name ~= "" then
+    require("mini.sessions").write(name)
+    vim.cmd("redraw")
+    vim.api.nvim_echo({ { " 󱫐 Session '" .. name .. "' saved!", "DiagnosticInfo" } }, true, {})
+  end
 end, { desc = "Save Session As" })
 map("n", "<leader>sd", function()
-	require("mini.sessions").select("delete", { force = true })
+  require("mini.sessions").select("delete", { force = true })
 end, { desc = "Delete Session (Force)" })
