@@ -4,32 +4,6 @@ require("mason").setup()
 require("mini.sessions").setup({
   directory = vim.fn.stdpath("data") .. "/sessions",
   autowrite = true,
-  hooks = {
-    post = {
-      read = function()
-        vim.schedule(function()
-          if not package.loaded["plugins"] then
-            require("lazy-loaded-plugins")
-            require("lsp")
-            require("debugging")
-          end
-
-          vim.schedule(function()
-            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-              if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
-                local bufname = vim.api.nvim_buf_get_name(buf)
-                if bufname ~= "" and vim.bo[buf].filetype == "" then
-                  vim.api.nvim_buf_call(buf, function()
-                    vim.cmd("silent! filetype detect")
-                  end)
-                end
-              end
-            end
-          end)
-        end)
-      end,
-    },
-  },
 })
 
 require("oil").setup({

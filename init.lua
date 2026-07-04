@@ -35,12 +35,51 @@ require("ui.terminal")
 require("ui.statusline")
 
 -- lazy loaded plugins
+local lazy_plugins_loaded = false
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
   group = vim.api.nvim_create_augroup("LazyLoadPlugins", { clear = true }),
   callback = function()
+    if lazy_plugins_loaded then
+      return
+    end
+    lazy_plugins_loaded = true
+
     require("lazy-loaded-plugins")
     require("lsp")
     require("debugging")
+
+    -- Setup plugin di atas ada yang menyetel 'filetype' pada buffer internalnya
+    -- (mis. panel dap-ui), sehingga flag internal `did_filetype` menyala di
+    -- tengah rantai autocmd ini dan `setf` dari deteksi filetype bawaan menjadi
+    -- no-op untuk buffer pemicunya. Ini hanya terjadi pada buffer yang dibuka
+    -- via bufadd() (mini.pick, oil) karena jalur itu tidak me-reset flag
+    -- tersebut, berbeda dengan :edit (yang dipakai session mini.sessions).
+    -- Ulangi deteksi setelah rantai autocmd selesai agar event FileType terpicu
+    -- saat vim.lsp.enable() sudah terdaftar: LSP, treesitter, dan ftplugin
+    -- ter-attach ke buffer pertama.
+    vim.schedule(function()
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "" then
+          if vim.bo[buf].filetype == "" then
+            if vim.api.nvim_buf_get_name(buf) ~= "" then
+              vim.api.nvim_buf_call(buf, function()
+                vim.cmd("silent! filetype detect")
+              end)
+            end
+          else
+            -- Filetype sudah terdeteksi tapi event-nya sempat terpicu sebelum
+            -- vim.lsp.enable() terdaftar: picu ulang khusus grup LSP saja.
+            vim.api.nvim_buf_call(buf, function()
+              pcall(vim.api.nvim_exec_autocmds, "FileType", {
+                group = "nvim.lsp.enable",
+                pattern = vim.bo[buf].filetype,
+                modeline = false,
+              })
+            end)
+          end
+        end
+      end
+    end)
   end,
 })
 
