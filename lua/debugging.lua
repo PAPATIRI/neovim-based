@@ -27,8 +27,8 @@ map("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
 map("n", "<S-F5>", dap.terminate, { desc = "Debug: Stop" })
 map("n", "<F9>", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
 map("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
-map("n", "<F11>", dap.step_into, { desc = "Debug: Step Into" })
-map("n", "<S-F11>", dap.step_out, { desc = "Debug: Step Out" })
+map("n", "<F12>", dap.step_into, { desc = "Debug: Step Into" })
+map("n", "<S-F12>", dap.step_out, { desc = "Debug: Step Out" })
 
 -- debugging setting for golang
 dap.adapters.delve = {
@@ -56,20 +56,49 @@ dap.adapters.coreclr = {
 }
 
 -- helper: cari .dll hasil build, cross-platform (tanpa shell `find`, aman di Windows)
+
+local dll_cache = nil
+
 local function get_dll_path()
+  if dll_cache then
+    return dll_cache
+  end
+
   local cwd = vim.fn.getcwd()
   local dlls = vim.fn.globpath(cwd, "**/bin/Debug/**/*.dll", false, true)
+
   if #dlls == 1 then
-    return dlls[1]
+    dll_cache = dlls[1]
   elseif #dlls > 1 then
-    -- lebih dari satu .csproj di solution -> biar user pilih
-    local choice = vim.fn.confirm("Pilih dll:\n" .. table.concat(dlls, "\n"), "&1\n&Manual", 1)
-    if choice == 1 then
-      return dlls[1]
-    end
+    local co = coroutine.running()
+    local solution_name = vim.fn.fnamemodify(cwd, ":t")
+    vim.ui.select(dlls, {
+      prompt = "Pilih project (dll) untuk didebug:",
+      format_item = function(item)
+        local rel = item
+        if item:sub(1, #cwd) == cwd then
+          rel = item:sub(#cwd + 2) -- buang cwd + separator
+        end
+        return solution_name .. "\\" .. rel
+      end,
+    }, function(choice)
+      dll_cache = choice
+      coroutine.resume(co)
+    end)
+    coroutine.yield()
   end
-  return vim.fn.input("Path ke .dll: ", cwd .. "/bin/Debug/", "file")
+
+  if not dll_cache then
+    dll_cache = vim.fn.input("Path ke .dll: ", cwd .. "/bin/Debug/", "file")
+  end
+  return dll_cache
 end
+
+-- keymap untuk "ganti startup project"
+map("n", "<leader>dp", function()
+  dll_cache = nil
+  vim.notify("main project direset, pilih ulang saat next debug")
+end, { desc = "Reset startup project (dll)" })
 
 dap.configurations.cs = {
   {
