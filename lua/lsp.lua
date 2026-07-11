@@ -61,24 +61,53 @@ vim.lsp.config.lua_ls = {
 vim.lsp.enable("lua_ls")
 
 -- typescript lsp
-vim.lsp.config.ts_ls = {
-  cmd = { "typescript-language-server", "--stdio" },
+vim.lsp.config.vtsls = {
+  cmd = { "vtsls", "--stdio" },
   capabilities = capabilities,
   root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+  },
   settings = {
+    vtsls = {
+      autoUseWorkspaceTsdk = true,
+      experimental = {
+        completion = {
+          enableServerSideFuzzyMatch = true,
+        },
+      },
+    },
     typescript = {
       suggest = {
-        includeCompletionsForImportStatements = true
-      }
+        completeFunctionCalls = true,
+      },
+      updateImportsOnFileMove = { enabled = "always" },
+      inlayHints = {
+        parameterNames = { enabled = "literals" },
+        parameterTypes = { enabled = true },
+        variableTypes = { enabled = false },
+        propertyDeclarationTypes = { enabled = true },
+        functionLikeReturnTypes = { enabled = false },
+        enumMemberValues = { enabled = true },
+      },
     },
     javascript = {
-      suggest = {
-        includeCompletionsForImportStatements = true
-      }
-    }
-  }
+      updateImportsOnFileMove = { enabled = "always" },
+      inlayHints = {
+        parameterNames = { enabled = "literals" },
+        parameterTypes = { enabled = true },
+        variableTypes = { enabled = false },
+        propertyDeclarationTypes = { enabled = true },
+        functionLikeReturnTypes = { enabled = false },
+        enumMemberValues = { enabled = true },
+      },
+    },
+  },
 }
-vim.lsp.enable("ts_ls")
+vim.lsp.enable("vtsls")
 
 -- tailwindcss lsp
 vim.lsp.config.tailwindcss = {
@@ -99,9 +128,6 @@ vim.lsp.config.tailwindcss = {
 vim.lsp.enable("tailwindcss")
 
 -- c# lsp (roslyn)
--- servernya diinstall via mason (:MasonInstall roslyn) dari registry Crashdummyy,
--- roslyn.nvim yang menghandle start/attach-nya (butuh solution/project discovery),
--- jadi TIDAK perlu vim.lsp.enable("roslyn")
 vim.lsp.config("roslyn", {
   capabilities = capabilities,
   settings = {
