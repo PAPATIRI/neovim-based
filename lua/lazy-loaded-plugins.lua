@@ -60,16 +60,39 @@ require("mini.indentscope").setup({
 
 -- lsp things
 require("flutter-tools").setup({})
-
 require("hop").setup({
   keys = "etovxqpdygfblzhckisuran",
 })
 
 require("nvim-ts-autotag").setup()
-require("nvim-treesitter").setup({
-  ensure_installed = { "javascript", "typescript", "tsx", "html", "css", "json", "lua", "go", "dart", "c_sharp" },
-  highlight = { enable = true },
-  indent = { enable = true }
+-- nvim-treesitter branch `main`: setup() tidak lagi menerima ensure_installed
+-- ataupun highlight; instalasi parser lewat install() (async, skip yang sudah
+-- ada) dan highlight harus dinyalakan manual per-buffer via vim.treesitter.start()
+--
+-- install() memanggil CLI `tree-sitter` via vim.system, yang di Windows tidak
+-- bisa men-spawn shim .cmd buatan npm (libuv hanya bisa .exe) — arahkan PATH ke
+-- tree-sitter.exe asli di dalam package tree-sitter-cli
+if vim.fn.has("win32") == 1 then
+  local shim = vim.fn.exepath("tree-sitter")
+  if shim ~= "" and not shim:lower():match("%.exe$") then
+    local pkg = vim.fs.joinpath(vim.fs.dirname(shim), "node_modules", "tree-sitter-cli")
+    if vim.uv.fs_stat(vim.fs.joinpath(pkg, "tree-sitter.exe")) then
+      vim.env.PATH = pkg .. ";" .. vim.env.PATH
+    end
+  end
+end
+require("nvim-treesitter").setup({})
+require("nvim-treesitter").install({
+  "javascript", "typescript", "tsx", "html", "css", "json", "lua", "go", "dart", "c_sharp",
+})
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("TreesitterStart", { clear = true }),
+  callback = function(ev)
+    -- pcall: filetype tanpa parser (mis. buffer plugin) dilewati tanpa error
+    if pcall(vim.treesitter.start, ev.buf) then
+      vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
 })
 
 -- folding setting dengan treesitter
