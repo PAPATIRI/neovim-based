@@ -31,15 +31,11 @@ require("mini.pairs").setup()
 require("mini.surround").setup()
 require("fidget").setup({
   notification = {
-    -- semua vim.notify() (mis. pesan error/warning dari nvim-dap) tampil sebagai
-    -- popup di pojok kanan bawah, bukan di command line yang memicu "Press ENTER"
     override_vim_notify = true,
-    -- pesan panjang dipotong, cukup sebagai penanda; detail lengkap via <leader>sna
     window = {
       max_width = 50,
     },
     configs = {
-      -- ikon default "❰❰" tidak ada di font (ter-render sebagai "(("), ganti bell
       default = vim.tbl_extend("force", require("fidget.notification").default_config, {
         name = "Notifikasi",
         icon = "󰂚",
