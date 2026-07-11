@@ -96,3 +96,11 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end,
   desc = "Matikan auto-comment pada baris baru",
 })
+
+-- highlight on yang
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "highlight when yanking (copying) text",
+  callback = function(_)
+    vim.hl.on_yank()
+  end
+})
