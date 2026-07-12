@@ -7,14 +7,23 @@ vim.api.nvim_create_autocmd("VimEnter", {
     local ms = (end_time - start_time) / 1000000
 
     vim.api.nvim_create_user_command("Startup", function()
-      local rtp = vim.api.nvim_list_runtime_paths()
-      print(string.format("🚀 Neovim siap dalam: %.2f ms", ms))
-      print("📦 Jumlah path/plugin di-load: " .. #rtp)
+      -- info=false: tanpa data branch/tag git yang lambat, cukup nama & status
+      local plugins = vim.pack.get(nil, { info = false })
+      table.sort(plugins, function(a, b)
+        return a.spec.name < b.spec.name
+      end)
 
-      for _, path in ipairs(rtp) do
-        print(path)
+      local n_active = 0
+      for _, p in ipairs(plugins) do
+        n_active = n_active + (p.active and 1 or 0)
       end
-    end, { desc = "Lihat waktu startup dan jumlah plugin" })
+
+      print(string.format("🚀 Neovim siap dalam: %.2f ms", ms))
+      print(string.format("📦 Plugin aktif: %d dari %d terpasang", n_active, #plugins))
+      for _, p in ipairs(plugins) do
+        print((p.active and "  ● " or "  ○ ") .. p.spec.name)
+      end
+    end, { desc = "Lihat waktu startup dan status plugin vim.pack" })
   end,
 })
 

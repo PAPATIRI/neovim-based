@@ -1,6 +1,6 @@
 -- general keymap
 local map = vim.keymap.set
-map("n", "<leader>o", ":update<CR> :source<CR>", { desc = "source neovim's configuration" })
+map("n", "<leader>so", ":update<CR> :source<CR>", { desc = "source neovim's configuration" })
 map("n", "<leader>w", ":write<CR>", { desc = "write the changes made" })
 map("n", "<leader>q", ":quit<CR>", { desc = "exit vim" })
 map("i", "jk", "<Esc>", { desc = "exit insert mode" })
@@ -36,15 +36,18 @@ end, { desc = "Error Selanjutnya" })
 -- plugin keymap
 vim.ui.select = require("mini.pick").ui_select
 map("n", "<leader>ff", ":Pick files<CR>")
+map("n", "<leader>fg", ":Pick grep_live<CR>", { desc = "Cari Kata di Project (Live Grep)" })
+map("n", "<leader>fw", ":Pick grep pattern='<cword>'<CR>", { desc = "Cari Kata di Bawah Kursor" })
 map("n", "<leader>h", ":Pick help<CR>")
 map("n", "<leader>bl", ":Pick buffers<CR>", { desc = "Pick Open Buffers" })
 map("n", "<leader>bd", ":bd<CR>", { desc = "Close Buffer" })
 map("n", "<leader>e", function()
   require("oil").toggle_float(vim.fn.getcwd())
 end, { desc = "Oil: Float Project Root" })
-map("n", "<leader>fo", function()
+map("n", "<leader>E", function()
   require("oil").toggle_float()
-end, { desc = "Oil: Float Parent Directory" })
+end, { desc = "Oil: Float Folder File Aktif" })
+
 map("n", "<leader>lf", vim.lsp.buf.format)
 
 -- mini sessions
