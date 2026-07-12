@@ -3,7 +3,7 @@ require("mini.icons").setup()
 require("mason").setup({
   registries = {
     "github:mason-org/mason-registry",
-    "github:Crashdummyy/mason-registry", -- registry yang menyediakan roslyn
+    "github:Crashdummyy/mason-registry",
   },
 })
 require("mini.sessions").setup({
